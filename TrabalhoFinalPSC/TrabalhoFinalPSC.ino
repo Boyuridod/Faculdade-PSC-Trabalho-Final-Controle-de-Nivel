@@ -1,16 +1,16 @@
 #include <SimpleModbusSlave.h>
 
 // ====== Pinos dos Ultrassônicos ======
-#define TRIG_1 2
-#define ECHO_1 3
-#define TRIG_2 4
-#define ECHO_2 5
+#define TRIG_1 6
+#define ECHO_1 7
+#define TRIG_2 8
+#define ECHO_2 9
 
 // ====== Pinos das Bombas ======
-#define BOMBA1P 6
-#define BOMBA1N 7
-#define BOMBA2P 8
-#define BOMBA2N 9
+#define BOMBA1P 4  //in1 ponte H
+#define BOMBA1N 5  //in2 ponte H
+#define BOMBA2P 3  //in3 ponte H
+#define BOMBA2N 2  //in4 ponte H
 
 // ====== Registradores Modbus ======
 enum {
@@ -42,6 +42,12 @@ long readUltrasonic(int trigPin, int echoPin) {
   return distance;
 }
 
+void ligaBomba1(int porcentagem) {
+  float porcentagemLiga = 255.0 * (porcentagem / 100.0);
+
+  analogWrite(BOMBA1P, porcentagemLiga);
+}
+
 void ligaBomba2(int porcentagem) {
   float porcentagemLiga = 255.0 * (porcentagem / 100.0);
 
@@ -59,14 +65,14 @@ void setup() {
   pinMode(TRIG_2, OUTPUT);
   pinMode(ECHO_2, INPUT);
 
-  // Bombas
-  pinMode(BOMBA1P, OUTPUT);
-  pinMode(BOMBA1N, OUTPUT);
+  // // Bombas
+  // pinMode(BOMBA1P, OUTPUT);
+  // pinMode(BOMBA1N, OUTPUT);
   pinMode(BOMBA2P, OUTPUT);
   pinMode(BOMBA2N, OUTPUT);
 
-  analogWrite(BOMBA1P, LOW);
-  analogWrite(BOMBA1N, LOW);
+  // analogWrite(BOMBA1P, LOW);
+  // analogWrite(BOMBA1N, LOW);
   analogWrite(BOMBA2P, LOW);
   analogWrite(BOMBA2N, LOW);
 }
