@@ -7,16 +7,16 @@
 #define ECHO_2 9
 
 enum {
-  DIST_1,      // distância sensor 1 (cm)
-  DIST_2,      // distância sensor 2 (cm)
-  BOMBA2_PWM,  // comando PWM da bomba 2 (0–255)
+  DIST_1,                   // distância sensor 1 (cm)
+  DIST_2,                   // distância sensor 2 (cm)
+  BOMBA2_PWM,               // comando PWM da bomba 2 (0–255)
   HOLDING_REGS_SIZE
 };
 
-#define BOMBA1P 4 //in1 ponte H
-#define BOMBA1N 5 //in2 ponte H
-#define BOMBA2P 3 //in3 ponte H
-#define BOMBA2N 2 //in4 ponte H
+#define BOMBA1P 4           //in1 ponte H
+#define BOMBA1N 5           //in2 ponte H
+#define BOMBA2P 3           //in3 ponte H
+#define BOMBA2N 2           //in4 ponte H
 
 const int rs = 8, en = 9, d4 = 4, d5 = 5, d6 = 6, d7 = 7;
 const int backLight = 10;
