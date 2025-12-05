@@ -277,6 +277,12 @@ void loop() {
     lcd.print(holdingRegs[SETPOINT_1]);
     lcd.print(" S2:");
     lcd.print(holdingRegs[SETPOINT_2]);
+    if(modo){
+      lcd.print(" MAN. ");
+    }
+    else{
+      lcd.print(" AUTO.");
+    }
 
     ultimoTempo = millis();
   }
