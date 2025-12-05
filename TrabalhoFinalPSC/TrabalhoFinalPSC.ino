@@ -14,22 +14,22 @@
 
 // Índices dos registradores Modbus (holdingRegs[])
 enum {
-  DIST_1,       // Nível do tanque 1 (Arduino → Scada) [cm]
-  DIST_2,       // Nível do tanque 2 (Arduino → Scada) [cm]
+  DIST_1,  // Nível do tanque 1 (Arduino → Scada) [cm]
+  DIST_2,  // Nível do tanque 2 (Arduino → Scada) [cm]
 
-  SETPOINT_1,   // Nível desejado para o tanque 1 (Scada → Arduino) [cm]
-  SETPOINT_2,   // Nível desejado para o tanque 2 (Scada → Arduino) [cm]
+  SETPOINT_1,  // Nível desejado para o tanque 1 (Scada → Arduino) [cm]
+  SETPOINT_2,  // Nível desejado para o tanque 2 (Scada → Arduino) [cm]
 
-  OUT_PID_1,    // Saída calculada do PID 1 (Arduino → Scada) [0-255 PWM]
-  OUT_PID_2,    // Saída calculada do PID 2 (Arduino → Scada) [0-255 PWM]
+  OUT_PID_1,  // Saída calculada do PID 1 (Arduino → Scada) [0-255 PWM]
+  OUT_PID_2,  // Saída calculada do PID 2 (Arduino → Scada) [0-255 PWM]
 
-  KP_1,         // Ganho proporcional do PID 1 (Scada → Arduino)
-  KI_1,         // Ganho integral do PID 1 (Scada → Arduino)
-  KD_1,         // Ganho derivativo do PID 1 (Scada → Arduino)
+  KP_1,  // Ganho proporcional do PID 1 (Scada → Arduino)
+  KI_1,  // Ganho integral do PID 1 (Scada → Arduino)
+  KD_1,  // Ganho derivativo do PID 1 (Scada → Arduino)
 
-  KP_2,         // Ganho proporcional do PID 2 (Scada → Arduino)
-  KI_2,         // Ganho integral do PID 2 (Scada → Arduino)
-  KD_2,         // Ganho derivativo do PID 2 (Scada → Arduino)
+  KP_2,  // Ganho proporcional do PID 2 (Scada → Arduino)
+  KI_2,  // Ganho integral do PID 2 (Scada → Arduino)
+  KD_2,  // Ganho derivativo do PID 2 (Scada → Arduino)
 
   HOLDING_REGS_SIZE  // Tamanho total do array (fica sempre por último)
 };
@@ -129,8 +129,8 @@ void setup() {
   PID1.SetMode(AUTOMATIC);
   PID2.SetMode(AUTOMATIC);
 
-  PID1.SetOutputLimits(0, 255);
-  PID2.SetOutputLimits(0, 255);
+  PID1.SetOutputLimits(0, 100);
+  PID2.SetOutputLimits(0, 100);
 }
 
 void loop() {
@@ -142,11 +142,11 @@ void loop() {
   long nivel1 = ALTURA_MAX - dist1;
   long nivel2 = ALTURA_MAX - dist2;
 
-  if(nivel1 < 0) nivel1 = 0;
-  if(nivel1 > ALTURA_MAX) nivel1 = ALTURA_MAX;
+  if (nivel1 < 0) nivel1 = 0;
+  if (nivel1 > ALTURA_MAX) nivel1 = ALTURA_MAX;
 
-  if(nivel2 < 0) nivel2 = 0;
-  if(nivel2 > ALTURA_MAX) nivel2 = ALTURA_MAX;
+  if (nivel2 < 0) nivel2 = 0;
+  if (nivel2 > ALTURA_MAX) nivel2 = ALTURA_MAX;
 
   holdingRegs[DIST_1] = nivel1;
   holdingRegs[DIST_2] = nivel2;
@@ -165,7 +165,7 @@ void loop() {
   PID1.Compute();
   PID2.Compute();
 
-// 30 a 100
+  // 30 a 100
   // int bomba1_percent = (int)Output1;
   int bomba1_percent = (int)Output1;
   if (bomba1_percent > 100) bomba1_percent = 100;
@@ -176,31 +176,31 @@ void loop() {
   ligaBomba2(bomba2_percent);
 
   // Mostrar no Serial valores recebidos e enviados
-// Serial.print("DIST1=");
-// Serial.print(holdingRegs[DIST_1]);
-// Serial.print("  DIST2=");
-// Serial.print(holdingRegs[DIST_2]);
-// Serial.print("  SP1=");
-// Serial.print(holdingRegs[SETPOINT_1]);
-// Serial.print("  SP2=");
-// Serial.print(holdingRegs[SETPOINT_2]);
-// Serial.print("  KP1=");
-// Serial.print(holdingRegs[KP_1]);
-// Serial.print("  KI1=");
-// Serial.print(holdingRegs[KI_1]);
-// Serial.print("  KD1=");
-// Serial.print(holdingRegs[KD_1]);
-// Serial.print("  KP2=");
-// Serial.print(holdingRegs[KP_2]);
-// Serial.print("  KI2=");
-// Serial.print(holdingRegs[KI_2]);
-// Serial.print("  KD2=");
-// Serial.print(holdingRegs[KD_2]);
+  // Serial.print("DIST1=");
+  // Serial.print(holdingRegs[DIST_1]);
+  // Serial.print("  DIST2=");
+  // Serial.print(holdingRegs[DIST_2]);
+  // Serial.print("  SP1=");
+  // Serial.print(holdingRegs[SETPOINT_1]);
+  // Serial.print("  SP2=");
+  // Serial.print(holdingRegs[SETPOINT_2]);
+  // Serial.print("  KP1=");
+  // Serial.print(holdingRegs[KP_1]);
+  // Serial.print("  KI1=");
+  // Serial.print(holdingRegs[KI_1]);
+  // Serial.print("  KD1=");
+  // Serial.print(holdingRegs[KD_1]);
+  // Serial.print("  KP2=");
+  // Serial.print(holdingRegs[KP_2]);
+  // Serial.print("  KI2=");
+  // Serial.print(holdingRegs[KI_2]);
+  // Serial.print("  KD2=");
+  // Serial.print(holdingRegs[KD_2]);
 
-// Serial.print("  OUT1=");
-// Serial.print(Output1);
-// Serial.print("  OUT2=");
-// Serial.println(Output2);
+  // Serial.print("  OUT1=");
+  // Serial.print(Output1);
+  // Serial.print("  OUT2=");
+  // Serial.println(Output2);
 
 
   // ======== LCD Atualizado a cada 100 ms ========
@@ -223,31 +223,28 @@ void loop() {
     }
 
     if (teclaNova != teclaAnt) {
-      if(teclas[teclaAnt].limite == select){
+      if (teclas[teclaAnt].limite == select) {
         Set1++;
 
-        if(Set1 > ALTURA_MAX) Set1 = ALTURA_MAX;
+        if (Set1 > ALTURA_MAX) Set1 = ALTURA_MAX;
 
         holdingRegs[SETPOINT_1] = Set1;
-      }
-      else if(teclas[teclaAnt].limite == esquerda){
+      } else if (teclas[teclaAnt].limite == esquerda) {
         Set1--;
 
-        if(Set1 < 0) Set1 = 0;
+        if (Set1 < 0) Set1 = 0;
 
         holdingRegs[SETPOINT_1] = Set1;
-      }
-      else if(teclas[teclaAnt].limite == cima){
+      } else if (teclas[teclaAnt].limite == cima) {
         Set2++;
 
-        if(Set2 > ALTURA_MAX) Set2 = ALTURA_MAX;
+        if (Set2 > ALTURA_MAX) Set2 = ALTURA_MAX;
 
         holdingRegs[SETPOINT_2] = Set2;
-      }
-      else if(teclas[teclaAnt].limite == baixo){
+      } else if (teclas[teclaAnt].limite == baixo) {
         Set2--;
 
-        if(Set2 < 0) Set2 = 0;
+        if (Set2 < 0) Set2 = 0;
 
         holdingRegs[SETPOINT_2] = Set2;
       }
