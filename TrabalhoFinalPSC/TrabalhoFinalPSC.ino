@@ -55,6 +55,13 @@ teclas[] = {
   { 1024, "            " }
 };
 
+#define direita 50
+#define cima 150
+#define baixo 300
+#define esquerda 500
+#define select 750
+#define reset 0
+
 long readUltrasonic(int trigPin, int echoPin) {
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
@@ -169,31 +176,31 @@ void loop() {
   ligaBomba2(bomba2_percent);
 
   // Mostrar no Serial valores recebidos e enviados
-Serial.print("DIST1=");
-Serial.print(holdingRegs[DIST_1]);
-Serial.print("  DIST2=");
-Serial.print(holdingRegs[DIST_2]);
-Serial.print("  SP1=");
-Serial.print(holdingRegs[SETPOINT_1]);
-Serial.print("  SP2=");
-Serial.print(holdingRegs[SETPOINT_2]);
-Serial.print("  KP1=");
-Serial.print(holdingRegs[KP_1]);
-Serial.print("  KI1=");
-Serial.print(holdingRegs[KI_1]);
-Serial.print("  KD1=");
-Serial.print(holdingRegs[KD_1]);
-Serial.print("  KP2=");
-Serial.print(holdingRegs[KP_2]);
-Serial.print("  KI2=");
-Serial.print(holdingRegs[KI_2]);
-Serial.print("  KD2=");
-Serial.print(holdingRegs[KD_2]);
+// Serial.print("DIST1=");
+// Serial.print(holdingRegs[DIST_1]);
+// Serial.print("  DIST2=");
+// Serial.print(holdingRegs[DIST_2]);
+// Serial.print("  SP1=");
+// Serial.print(holdingRegs[SETPOINT_1]);
+// Serial.print("  SP2=");
+// Serial.print(holdingRegs[SETPOINT_2]);
+// Serial.print("  KP1=");
+// Serial.print(holdingRegs[KP_1]);
+// Serial.print("  KI1=");
+// Serial.print(holdingRegs[KI_1]);
+// Serial.print("  KD1=");
+// Serial.print(holdingRegs[KD_1]);
+// Serial.print("  KP2=");
+// Serial.print(holdingRegs[KP_2]);
+// Serial.print("  KI2=");
+// Serial.print(holdingRegs[KI_2]);
+// Serial.print("  KD2=");
+// Serial.print(holdingRegs[KD_2]);
 
-Serial.print("  OUT1=");
-Serial.print(Output1);
-Serial.print("  OUT2=");
-Serial.println(Output2);
+// Serial.print("  OUT1=");
+// Serial.print(Output1);
+// Serial.print("  OUT2=");
+// Serial.println(Output2);
 
 
   // ======== LCD Atualizado a cada 100 ms ========
@@ -204,24 +211,49 @@ Serial.println(Output2);
 
     // CÓDIGO ANTIGO FUNCIONAL:
 
-    // static int teclaAnt = -1;
+    static int teclaAnt = -1;
 
-    // int leitura = analogRead(A0);
+    int leitura = analogRead(A0);
 
-    // int teclaNova;
-    // for (teclaNova = 0;; teclaNova++) {
-    //   if (leitura < teclas[teclaNova].limite) {
-    //     break;
-    //   }
-    // }
+    int teclaNova;
+    for (teclaNova = 0;; teclaNova++) {
+      if (leitura < teclas[teclaNova].limite) {
+        break;
+      }
+    }
 
-    // if (teclaNova != teclaAnt) {
-    //   lcd.setCursor(0, 1);
-    //   lcd.print(teclas[teclaNova].nome);
-    //   teclaAnt = teclaNova;
-    // }
+    if (teclaNova != teclaAnt) {
+      if(teclas[teclaAnt].limite == select){
+        Set1++;
 
-    // ultimoTempo = millis();
+        if(Set1 > ALTURA_MAX) Set1 = ALTURA_MAX;
+
+        holdingRegs[SETPOINT_1] = Set1;
+      }
+      else if(teclas[teclaAnt].limite == esquerda){
+        Set1--;
+
+        if(Set1 < 0) Set1 = 0;
+
+        holdingRegs[SETPOINT_1] = Set1;
+      }
+      else if(teclas[teclaAnt].limite == cima){
+        Set2++;
+
+        if(Set2 > ALTURA_MAX) Set2 = ALTURA_MAX;
+
+        holdingRegs[SETPOINT_2] = Set2;
+      }
+      else if(teclas[teclaAnt].limite == baixo){
+        Set2--;
+
+        if(Set2 < 0) Set2 = 0;
+
+        holdingRegs[SETPOINT_2] = Set2;
+      }
+
+      teclaAnt = teclaNova;
+    }
 
     // CÓDIGO DO CHATGPT PARA USO com PID PRINTANDO VARIÁVEIS NO LCD:
     lcd.setCursor(0, 0);
