@@ -31,6 +31,8 @@ enum {
   KI_2,  // Ganho integral do PID 2 (Scada → Arduino)
   KD_2,  // Ganho derivativo do PID 2 (Scada → Arduino)
 
+  MODO,   // Modo de operação do sistema
+
   HOLDING_REGS_SIZE  // Tamanho total do array (fica sempre por último)
 };
 
@@ -61,6 +63,8 @@ teclas[] = {
 #define esquerda 500
 #define select 750
 #define reset 0
+
+int modo = 0;
 
 long readUltrasonic(int trigPin, int echoPin) {
   digitalWrite(trigPin, LOW);
@@ -150,6 +154,8 @@ void loop() {
 
   holdingRegs[DIST_1] = nivel1;
   holdingRegs[DIST_2] = nivel2;
+
+  modo = holdingRegs[MODO];
 
   Input1 = nivel1;
   Input2 = nivel2;
@@ -247,6 +253,13 @@ void loop() {
         if (Set2 < 0) Set2 = 0;
 
         holdingRegs[SETPOINT_2] = Set2;
+      }
+      else if (teclas[teclaAnt].limite == direita) {
+        modo++;
+
+        if(modo > 1) modo = 0;
+
+        holdingRegs[MODO] = modo;
       }
 
       teclaAnt = teclaNova;
