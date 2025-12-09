@@ -31,7 +31,7 @@ enum {
   KI_2,  // Ganho integral do PID 2 (Scada → Arduino)
   KD_2,  // Ganho derivativo do PID 2 (Scada → Arduino)
 
-  MODO,   // Modo de operação do sistema
+  MODO,  // Modo de operação do sistema
 
   HOLDING_REGS_SIZE  // Tamanho total do array (fica sempre por último)
 };
@@ -106,6 +106,10 @@ unsigned long ultimoTempo = 0;
 const unsigned long intervalo = 100;  // 1 segundo em ms
 const int ALTURA_MAX = 25;
 
+unsigned long lastComTime = 0;
+const unsigned long timeoutScada = 5000;
+#define LED_STATUS 13
+
 void setup() {
   Serial.begin(9600);
   modbus_configure(&Serial, 9600, SERIAL_8N1, 1, 0, HOLDING_REGS_SIZE, holdingRegs);
@@ -135,10 +139,24 @@ void setup() {
 
   PID1.SetOutputLimits(0, 100);
   PID2.SetOutputLimits(0, 100);
+
+  pinMode(LED_STATUS, OUTPUT);
+  digitalWrite(LED_STATUS, HIGH);
 }
 
 void loop() {
-  modbus_update();
+
+  bool pacoteRecebido = modbus_update();
+
+  if (pacoteRecebido) {
+    lastComTime = millis();
+  }
+
+  // --- LED STATUS ---
+  if (millis() - lastComTime > timeoutScada)
+    digitalWrite(LED_STATUS, HIGH);  // sem Scada → LED acende
+  else
+    digitalWrite(LED_STATUS, LOW);  // com Scada → LED apaga
 
   long dist1 = readUltrasonic(TRIG_1, ECHO_1);
   long dist2 = readUltrasonic(TRIG_2, ECHO_2);
@@ -163,22 +181,54 @@ void loop() {
   Set1 = holdingRegs[SETPOINT_1];
   Set2 = holdingRegs[SETPOINT_2];
 
-  // ======== ATUALIZA OS PARÂMETROS DO PID ========
-  PID1.SetTunings(holdingRegs[KP_1], holdingRegs[KI_1], holdingRegs[KD_1]);
-  PID2.SetTunings(holdingRegs[KP_2], holdingRegs[KI_2], holdingRegs[KD_2]);
+  if (modo == 1) {
+    if (Set1 > 100) Set1 = 100;
+    if (Set2 > 100) Set2 = 100;
 
-  // ======== EXECUTA O PID ========
-  PID1.Compute();
-  PID2.Compute();
+    holdingRegs[SETPOINT_1] = Set1;
+    holdingRegs[SETPOINT_2] = Set2;
+  } else {
+    if (Set1 > ALTURA_MAX) Set1 = ALTURA_MAX;
+    if (Set2 > ALTURA_MAX) Set2 = ALTURA_MAX;
+
+    holdingRegs[SETPOINT_1] = Set1;
+    holdingRegs[SETPOINT_2] = Set2;
+  }
+
+  // ======== ATUALIZA OS PARÂMETROS DO PID ========
+  // Conversão: valores recebidos vêm x10 → usamos /10.0
+  double Kp1 = holdingRegs[KP_1] / 10.0;
+  double Ki1 = holdingRegs[KI_1] / 10.0;
+  double Kd1 = holdingRegs[KD_1] / 10.0;
+
+  double Kp2 = holdingRegs[KP_2] / 10.0;
+  double Ki2 = holdingRegs[KI_2] / 10.0;
+  double Kd2 = holdingRegs[KD_2] / 10.0;
+
+  PID1.SetTunings(Kp1, Ki1, Kd1);
+  PID2.SetTunings(Kp2, Ki2, Kd2);
+
+  int bomba1_percent;
+  int bomba2_percent;
+  if (modo == 0) {
+    PID1.Compute();
+    PID2.Compute();
+
+    bomba1_percent = (int)Output1;
+    bomba2_percent = (int)Output2;
+  } else {
+    bomba1_percent = holdingRegs[SETPOINT_1];
+    bomba2_percent = holdingRegs[SETPOINT_2];
+  }
 
   // 30 a 100
-  // int bomba1_percent = (int)Output1;
-  int bomba1_percent = (int)Output1;
+  if (bomba1_percent < 0) bomba1_percent = 0;
   if (bomba1_percent > 100) bomba1_percent = 100;
-  ligaBomba1(bomba1_percent);
 
-  int bomba2_percent = (int)Output2;
+  if (bomba2_percent < 0) bomba2_percent = 0;
   if (bomba2_percent > 100) bomba2_percent = 100;
+
+  ligaBomba1(bomba1_percent);
   ligaBomba2(bomba2_percent);
 
   // Mostrar no Serial valores recebidos e enviados
@@ -232,7 +282,11 @@ void loop() {
       if (teclas[teclaAnt].limite == select) {
         Set1++;
 
-        if (Set1 > ALTURA_MAX) Set1 = ALTURA_MAX;
+        if (modo == 1) {
+          if (Set1 > 100) Set1 = 100;
+        } else {
+          if (Set1 > ALTURA_MAX) Set1 = ALTURA_MAX;
+        }
 
         holdingRegs[SETPOINT_1] = Set1;
       } else if (teclas[teclaAnt].limite == esquerda) {
@@ -244,7 +298,11 @@ void loop() {
       } else if (teclas[teclaAnt].limite == cima) {
         Set2++;
 
-        if (Set2 > ALTURA_MAX) Set2 = ALTURA_MAX;
+        if (modo == 1) {
+          if (Set2 > 100) Set2 = 100;
+        } else {
+          if (Set2 > ALTURA_MAX) Set2 = ALTURA_MAX;
+        }
 
         holdingRegs[SETPOINT_2] = Set2;
       } else if (teclas[teclaAnt].limite == baixo) {
@@ -253,11 +311,10 @@ void loop() {
         if (Set2 < 0) Set2 = 0;
 
         holdingRegs[SETPOINT_2] = Set2;
-      }
-      else if (teclas[teclaAnt].limite == direita) {
+      } else if (teclas[teclaAnt].limite == direita) {
         modo++;
 
-        if(modo > 1) modo = 0;
+        if (modo > 1) modo = 0;
 
         holdingRegs[MODO] = modo;
       }
@@ -277,10 +334,9 @@ void loop() {
     lcd.print(holdingRegs[SETPOINT_1]);
     lcd.print(" S2:");
     lcd.print(holdingRegs[SETPOINT_2]);
-    if(modo){
+    if (modo) {
       lcd.print(" MAN. ");
-    }
-    else{
+    } else {
       lcd.print(" AUTO.");
     }
 
