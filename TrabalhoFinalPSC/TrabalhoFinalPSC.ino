@@ -14,8 +14,8 @@
 
 // Índices dos registradores Modbus (holdingRegs[])
 enum {
-  DIST_1,  // Nível do tanque 1 (Arduino → Scada) [cm]
-  DIST_2,  // Nível do tanque 2 (Arduino → Scada) [cm]
+  NIVEL_1,  // Nível do tanque 1 (Arduino → Scada) [cm]
+  NIVEL_2,  // Nível do tanque 2 (Arduino → Scada) [cm]
 
   SETPOINT_1,  // Nível desejado para o tanque 1 (Scada → Arduino) [cm]
   SETPOINT_2,  // Nível desejado para o tanque 2 (Scada → Arduino) [cm]
@@ -152,11 +152,10 @@ void loop() {
     lastComTime = millis();
   }
 
-  // --- LED STATUS ---
   if (millis() - lastComTime > timeoutScada)
-    digitalWrite(LED_STATUS, HIGH);  // sem Scada → LED acende
+    digitalWrite(LED_STATUS, HIGH);
   else
-    digitalWrite(LED_STATUS, LOW);  // com Scada → LED apaga
+    digitalWrite(LED_STATUS, LOW);
 
   long dist1 = readUltrasonic(TRIG_1, ECHO_1);
   long dist2 = readUltrasonic(TRIG_2, ECHO_2);
@@ -170,8 +169,8 @@ void loop() {
   if (nivel2 < 0) nivel2 = 0;
   if (nivel2 > ALTURA_MAX) nivel2 = ALTURA_MAX;
 
-  holdingRegs[DIST_1] = nivel1;
-  holdingRegs[DIST_2] = nivel2;
+  holdingRegs[NIVEL_1] = nivel1;
+  holdingRegs[NIVEL_2] = nivel2;
 
   modo = holdingRegs[MODO];
 
@@ -195,7 +194,6 @@ void loop() {
     holdingRegs[SETPOINT_2] = Set2;
   }
 
-  // ======== ATUALIZA OS PARÂMETROS DO PID ========
   // Conversão: valores recebidos vêm x10 → usamos /10.0
   double Kp1 = holdingRegs[KP_1] / 10.0;
   double Ki1 = holdingRegs[KI_1] / 10.0;
@@ -216,12 +214,16 @@ void loop() {
 
     bomba1_percent = (int)Output1;
     bomba2_percent = (int)Output2;
+    holdingRegs[OUT_PID_1] = (int)Output1;
+    holdingRegs[OUT_PID_2] = (int)Output2;
+
   } else {
     bomba1_percent = holdingRegs[SETPOINT_1];
     bomba2_percent = holdingRegs[SETPOINT_2];
+    holdingRegs[OUT_PID_1] = holdingRegs[SETPOINT_1];
+    holdingRegs[OUT_PID_2] = holdingRegs[SETPOINT_2];
   }
 
-  // 30 a 100
   if (bomba1_percent < 0) bomba1_percent = 0;
   if (bomba1_percent > 100) bomba1_percent = 100;
 
@@ -231,42 +233,7 @@ void loop() {
   ligaBomba1(bomba1_percent);
   ligaBomba2(bomba2_percent);
 
-  // Mostrar no Serial valores recebidos e enviados
-  // Serial.print("DIST1=");
-  // Serial.print(holdingRegs[DIST_1]);
-  // Serial.print("  DIST2=");
-  // Serial.print(holdingRegs[DIST_2]);
-  // Serial.print("  SP1=");
-  // Serial.print(holdingRegs[SETPOINT_1]);
-  // Serial.print("  SP2=");
-  // Serial.print(holdingRegs[SETPOINT_2]);
-  // Serial.print("  KP1=");
-  // Serial.print(holdingRegs[KP_1]);
-  // Serial.print("  KI1=");
-  // Serial.print(holdingRegs[KI_1]);
-  // Serial.print("  KD1=");
-  // Serial.print(holdingRegs[KD_1]);
-  // Serial.print("  KP2=");
-  // Serial.print(holdingRegs[KP_2]);
-  // Serial.print("  KI2=");
-  // Serial.print(holdingRegs[KI_2]);
-  // Serial.print("  KD2=");
-  // Serial.print(holdingRegs[KD_2]);
-
-  // Serial.print("  OUT1=");
-  // Serial.print(Output1);
-  // Serial.print("  OUT2=");
-  // Serial.println(Output2);
-
-
-  // ======== LCD Atualizado a cada 100 ms ========
   if (millis() - ultimoTempo >= intervalo) {
-    // ATUALIZAR PARA TECLAS MUDAREM O SETPOINT. ATUALMENTE
-    // SALVE ENGANO QUEM MUDA E O SCADABR
-
-
-    // CÓDIGO ANTIGO FUNCIONAL:
-
     static int teclaAnt = -1;
 
     int leitura = analogRead(A0);
@@ -322,12 +289,11 @@ void loop() {
       teclaAnt = teclaNova;
     }
 
-    // CÓDIGO DO CHATGPT PARA USO com PID PRINTANDO VARIÁVEIS NO LCD:
     lcd.setCursor(0, 0);
-    lcd.print("O1:");
-    lcd.print(Output1);
-    lcd.print(" O2:");
-    lcd.print(Output2);
+    lcd.print("N1:");
+    lcd.print(nivel1);
+    lcd.print(" N2:");
+    lcd.print(nivel2);
 
     lcd.setCursor(0, 1);
     lcd.print("S1:");
