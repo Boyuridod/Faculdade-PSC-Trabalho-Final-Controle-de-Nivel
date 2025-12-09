@@ -14,8 +14,8 @@
 
 // Índices dos registradores Modbus (holdingRegs[])
 enum {
-  DIST_1,  // Nível do tanque 1 (Arduino → Scada) [cm]
-  DIST_2,  // Nível do tanque 2 (Arduino → Scada) [cm]
+  NIVEL_1,  // Nível do tanque 1 (Arduino → Scada) [cm]
+  NIVEL_2,  // Nível do tanque 2 (Arduino → Scada) [cm]
 
   SETPOINT_1,  // Nível desejado para o tanque 1 (Scada → Arduino) [cm]
   SETPOINT_2,  // Nível desejado para o tanque 2 (Scada → Arduino) [cm]
@@ -32,6 +32,7 @@ enum {
   KD_2,  // Ganho derivativo do PID 2 (Scada → Arduino)
 
   MODO,  // Modo de operação do sistema
+  IS_CONNECTED, // Verifica se está conectado ao SCADA
 
   HOLDING_REGS_SIZE  // Tamanho total do array (fica sempre por último)
 };
@@ -141,22 +142,20 @@ void setup() {
   PID2.SetOutputLimits(0, 100);
 
   pinMode(LED_STATUS, OUTPUT);
-  digitalWrite(LED_STATUS, HIGH);
 }
 
 void loop() {
 
-  bool pacoteRecebido = modbus_update();
+  int connected = 0;
 
-  if (pacoteRecebido) {
-    lastComTime = millis();
+  connected = holdingRegs[IS_CONNECTED];
+
+  if(connected){
+    digitalWrite(LED_STATUS, HIGH);
   }
-
-  // --- LED STATUS ---
-  if (millis() - lastComTime > timeoutScada)
-    digitalWrite(LED_STATUS, HIGH);  // sem Scada → LED acende
-  else
-    digitalWrite(LED_STATUS, LOW);  // com Scada → LED apaga
+  else{
+    digitalWrite(LED_STATUS, LOW)
+  }
 
   long dist1 = readUltrasonic(TRIG_1, ECHO_1);
   long dist2 = readUltrasonic(TRIG_2, ECHO_2);
@@ -170,8 +169,8 @@ void loop() {
   if (nivel2 < 0) nivel2 = 0;
   if (nivel2 > ALTURA_MAX) nivel2 = ALTURA_MAX;
 
-  holdingRegs[DIST_1] = nivel1;
-  holdingRegs[DIST_2] = nivel2;
+  holdingRegs[NIVEL_1] = nivel1;
+  holdingRegs[NIVEL_2] = nivel2;
 
   modo = holdingRegs[MODO];
 
@@ -232,10 +231,10 @@ void loop() {
   ligaBomba2(bomba2_percent);
 
   // Mostrar no Serial valores recebidos e enviados
-  // Serial.print("DIST1=");
-  // Serial.print(holdingRegs[DIST_1]);
-  // Serial.print("  DIST2=");
-  // Serial.print(holdingRegs[DIST_2]);
+  // Serial.print("NIVEL1=");
+  // Serial.print(holdingRegs[NIVEL_1]);
+  // Serial.print("  NIVEL2=");
+  // Serial.print(holdingRegs[NIVEL_2]);
   // Serial.print("  SP1=");
   // Serial.print(holdingRegs[SETPOINT_1]);
   // Serial.print("  SP2=");
