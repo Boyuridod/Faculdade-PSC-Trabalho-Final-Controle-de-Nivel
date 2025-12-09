@@ -146,7 +146,7 @@ void setup() {
 
 void loop() {
 
-  int connected = 0;
+  bool connected = 0;
 
   connected = holdingRegs[IS_CONNECTED];
 
@@ -321,12 +321,17 @@ void loop() {
       teclaAnt = teclaNova;
     }
 
-    // CÓDIGO DO CHATGPT PARA USO com PID PRINTANDO VARIÁVEIS NO LCD:
     lcd.setCursor(0, 0);
-    lcd.print("O1:");
-    lcd.print(Output1);
-    lcd.print(" O2:");
-    lcd.print(Output2);
+    lcd.print("                         ");
+
+    lcd.setCursor(0, 0);
+    lcd.print("N1:");
+    lcd.print(nivel1);
+    lcd.print(" N2:");
+    lcd.print(nivel2);
+
+    lcd.setCursor(0, 1);
+    lcd.print("                         ");
 
     lcd.setCursor(0, 1);
     lcd.print("S1:");
