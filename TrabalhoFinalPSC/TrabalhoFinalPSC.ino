@@ -290,11 +290,15 @@ void loop() {
     }
 
     lcd.setCursor(0, 0);
+    lcd.print("                         ");
+    lcd.setCursor(0, 0);
     lcd.print("N1:");
     lcd.print(nivel1);
     lcd.print(" N2:");
     lcd.print(nivel2);
 
+    lcd.setCursor(0, 1);
+    lcd.print("                         ");
     lcd.setCursor(0, 1);
     lcd.print("S1:");
     lcd.print(holdingRegs[SETPOINT_1]);
