@@ -2,9 +2,9 @@
 
 ## 👥 Autores
 
-* **Yuri Duarte** – [GitHub](https://github.com/yuriduartedev)
-* **José Arantes** – [GitHub](https://github.com/JoseArantes)
-* **Vinícius Gabriel** – [GitHub](https://github.com/ViniciusGabriel)
+* **Yuri Duarte** – [GitHub](https://github.com/Boyuridod)
+* **José Arantes** – [GitHub](https://github.com/JoseArantes83)
+* **Vinícius Gabriel** – [GitHub](https://github.com/ViniciusGRBarbosa)
 
 ---
 
@@ -51,7 +51,7 @@ O sistema utiliza:
 ## 🎥 Vídeo Demonstrativo
 
 Assista ao vídeo completo no YouTube:
-👉 [https://youtu.be/SEU_VIDEO_AQUI](https://youtu.be/SEU_VIDEO_AQUI)
+👉 [https://youtube.com/shorts/8xrBj0CguZs?si=cVy29H34B37TuoLJ](https://youtube.com/shorts/8xrBj0CguZs?si=cVy29H34B37TuoLJ)
 
 ---
 
