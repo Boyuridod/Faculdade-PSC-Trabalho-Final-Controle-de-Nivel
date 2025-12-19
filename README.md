@@ -1,13 +1,5 @@
 # 🏭 Projeto de Planta Industrial com Controle de Nível via PID
 
-## 👥 Autores
-
-* **Yuri Duarte** – [GitHub](https://github.com/Boyuridod)
-* **José Arantes** – [GitHub](https://github.com/JoseArantes83)
-* **Vinícius Gabriel** – [GitHub](https://github.com/ViniciusGRBarbosa)
-
----
-
 ## 📘 Descrição do Projeto
 
 Este projeto simula uma **planta industrial**, composta por:
@@ -36,7 +28,7 @@ O sistema utiliza:
 
 ---
 
-## 🖥️ Interface do SCADABR
+<!-- ## 🖥️ Interface do SCADABR
 
 *(Insira aqui imagens da interface do SCADABR)*
 
@@ -46,26 +38,12 @@ O sistema utiliza:
 
 *(Insira aqui fotos do projeto montado)*
 
----
+--- -->
 
 ## 🎥 Vídeo Demonstrativo
 
 Assista ao vídeo completo no YouTube:
 👉 [https://youtube.com/shorts/8xrBj0CguZs?si=cVy29H34B37TuoLJ](https://youtube.com/shorts/8xrBj0CguZs?si=cVy29H34B37TuoLJ)
-
----
-
-## 📂 Estrutura do Repositório
-
-```
-├── /arduino-code
-│   └── controle_pid.ino
-├── /imagens
-│   ├── scadabr-interface.png
-│   ├── projeto-finalizado-1.jpg
-│   └── projeto-finalizado-2.jpg
-├── README.md
-```
 
 ---
 
@@ -81,7 +59,7 @@ Assista ao vídeo completo no YouTube:
 
 ## 🚀 Tecnologias Utilizadas
 
-* Arduino UNO/Nano
+* Arduino UNO
 * Sensores Ultrassônicos HC-SR04
 * Ponte H (L298N ou similar)
 * Bombas hidráulicas 12V
@@ -100,10 +78,14 @@ Assista ao vídeo completo no YouTube:
 
 ---
 
-## 📄 Licença
+## 👥 Autores
 
-Este projeto é de uso livre para fins educacionais e experimentais.
+* **Yuri Duarte** – [GitHub](https://github.com/Boyuridod)
+* **José Arantes** – [GitHub](https://github.com/JoseArantes83)
+* **Vinícius Gabriel** – [GitHub](https://github.com/ViniciusGRBarbosa)
 
 ---
 
-Se quiser, posso inserir as imagens diretamente no README ou ajustar o texto conforme necessário!
+## 📄 Licença
+
+Este projeto é de uso livre para fins educacionais e experimentais.
